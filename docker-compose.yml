@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:alpine
+    restart: 'always'
+    ports:
+      - '5432:5432'
+    environment:
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_DB=neoway-db"
+      - "POSTGRES_PASSWORD=postgres"
+    volumes:
+      - ./db/postgresql-data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    image: go-env
+    command: app
+    volumes:
+      - .:/go/src/app/
+    environment:
+      - ""
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
