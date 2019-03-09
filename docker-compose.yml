@@ -21,6 +21,13 @@ services:
     command: ["go", "run", "main.go"]
     ports:
       - "8080:8080"
+    environment:
+      - "INPUT_PATH=/home/base_teste.csv"
+      - "HOST=192.168.25.109"
+      - "PORT=5432"
+      - "USER=postgres"
+      - "PASSWORD=postgres"
+      - "DBNAME=neoway-db"
     depends_on:
       - db
     links:
