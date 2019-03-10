@@ -4,14 +4,36 @@ import (
     "database/sql"
     "fmt"
     "os"
-    "strconv"
     // "strings"
     _ "github.com/lib/pq"
     "gopkg.in/Nhanderu/brdoc.v1"
 )
 
+type Connect struct {
+    HOST, PORT, USER, PASSWORD, DBNAME, TABLENAME  string    
+}
+
 func main() {
+    c := Connect {
+        os.Getenv("HOST"),
+        os.Getenv("PORT"),
+        os.Getenv("USER"),
+        os.Getenv("PASSWORD"),
+        os.Getenv("DBNAME"),
+        os.Getenv("TABLENAME"),
+    }
+
+	// p := &c
+
+    c.dbConnect();
+
+    // // Connect to DB
+    // dbConnect()
+    
+    // Verify and copy values to table
     copyToDB()
+    
+    // Validate CPF & CNPJ
     cpfIsValid()
     cnpjIsValid()
 
@@ -26,12 +48,12 @@ func insertData(cpf, data_da_ultima_compra, ticket_medio, ticket_da_ultima_compr
 
     // Get env variables
     host     := os.Getenv("HOST")
-    port,_   := strconv.Atoi(os.Getenv("PORT")) //convert port to int
+    port     := os.Getenv("PORT")
     user     := os.Getenv("USER")
     password := os.Getenv("PASSWORD")
     dbname   := os.Getenv("DBNAME")
 
-    psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
       "password=%s dbname=%s sslmode=disable",
       host, port, user, password, dbname)
 
@@ -77,12 +99,12 @@ func insertData(cpf, data_da_ultima_compra, ticket_medio, ticket_da_ultima_compr
 func copyToDB(){
     // Get env variables
     host     := os.Getenv("HOST")
-    port,_   := strconv.Atoi(os.Getenv("PORT")) //convert port to int
+    port     := os.Getenv("PORT") //convert port to int
     user     := os.Getenv("USER")
     password := os.Getenv("PASSWORD")
     dbname   := os.Getenv("DBNAME")
 
-    psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
       "password=%s dbname=%s sslmode=disable",
       host, port, user, password, dbname)
 
@@ -178,20 +200,14 @@ func importCSV(){
     // fmt.Println("Copia feita com sucesso!")
 }
 
-func dbConnect(){
-    // Get env variables
-    host     := os.Getenv("HOST")
-    port,_   := strconv.Atoi(os.Getenv("PORT")) //convert port to int
-    user     := os.Getenv("USER")
-    password := os.Getenv("PASSWORD")
-    dbname   := os.Getenv("DBNAME")
+func (c *Connect) dbConnect() {
 
-    psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
       "password=%s dbname=%s sslmode=disable",
-      host, port, user, password, dbname)
+      c.HOST, c.PORT, c.USER, c.PASSWORD, c.DBNAME)
 
     db, err := sql.Open("postgres", psqlInfo)
-    
+
     if err != nil {
       panic(err)
     }
@@ -201,19 +217,19 @@ func dbConnect(){
     if err != nil {
         panic(err)
     }
-    
-    fmt.Println("Successfully connected!")
+
+    fmt.Println("Successfully connected inside method!")
 }
 
 func cpfIsValid(){
     // Get env variables
     host     := os.Getenv("HOST")
-    port,_   := strconv.Atoi(os.Getenv("PORT")) //convert port to int
+    port     := os.Getenv("PORT")
     user     := os.Getenv("USER")
     password := os.Getenv("PASSWORD")
     dbname   := os.Getenv("DBNAME")
 
-    psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
       "password=%s dbname=%s sslmode=disable",
       host, port, user, password, dbname)
 
@@ -252,7 +268,7 @@ func cpfIsValid(){
             // handle this error
             panic(err)
         }
-        fmt.Printf("CPF: %v - ID: %v - É valido? %v\n", returnedCpf, returnedID, brdoc.IsCPF(returnedCpf))
+        // fmt.Printf("CPF: %v - ID: %v - É valido? %v\n", returnedCpf, returnedID, brdoc.IsCPF(returnedCpf))
 
         if !(brdoc.IsCPF(returnedCpf)){
             sqlStatement := `
@@ -284,14 +300,14 @@ func cpfIsValid(){
 func cnpjIsValid(){
     // Get env variables
     host     := os.Getenv("HOST")
-    port,_   := strconv.Atoi(os.Getenv("PORT")) //convert port to int
+    port     := os.Getenv("PORT")
     user     := os.Getenv("USER")
     password := os.Getenv("PASSWORD")
     dbname   := os.Getenv("DBNAME")
 
-    psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-      "password=%s dbname=%s sslmode=disable",
-      host, port, user, password, dbname)
+    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
+                            "password=%s dbname=%s sslmode=disable",
+                            host, port, user, password, dbname)
 
     db, err := sql.Open("postgres", psqlInfo)
 
@@ -329,7 +345,7 @@ func cnpjIsValid(){
             // handle this error
             panic(err)
         }
-        fmt.Printf("CNPJ mais frequente: %v - É valido? %v / CNPJ ultima compra: %v - É valido? %v- ID: %v\n", moreFrequentCNPJ, brdoc.IsCNPJ(moreFrequentCNPJ), lastBuyCNPJ, brdoc.IsCNPJ(lastBuyCNPJ), returnedID)
+        // fmt.Printf("CNPJ mais frequente: %v - É valido? %v / CNPJ ultima compra: %v - É valido? %v- ID: %v\n", moreFrequentCNPJ, brdoc.IsCNPJ(moreFrequentCNPJ), lastBuyCNPJ, brdoc.IsCNPJ(lastBuyCNPJ), returnedID)
         
         if !(brdoc.IsCNPJ(moreFrequentCNPJ) || brdoc.IsCNPJ(lastBuyCNPJ)){
             sqlStatement := `
