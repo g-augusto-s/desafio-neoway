@@ -14,22 +14,19 @@ type Connect struct {
 }
 
 func main() {
-    c := Connect {
-        os.Getenv("HOST"),
-        os.Getenv("PORT"),
-        os.Getenv("USER"),
-        os.Getenv("PASSWORD"),
-        os.Getenv("DBNAME"),
-        os.Getenv("TABLENAME"),
-    }
+    // c := Connect {
+    //     os.Getenv("HOST"),
+    //     os.Getenv("PORT"),
+    //     os.Getenv("USER"),
+    //     os.Getenv("PASSWORD"),
+    //     os.Getenv("DBNAME"),
+    //     os.Getenv("TABLENAME"),
+    // }
 
 	// p := &c
+    // Connect to DB
+    // c.dbConnect();
 
-    c.dbConnect();
-
-    // // Connect to DB
-    // dbConnect()
-    
     // Verify and copy values to table
     copyToDB()
     
