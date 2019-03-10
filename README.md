@@ -27,7 +27,7 @@ docker cp base_teste.csv d07352f24cb2:/home
 ##Inside docker again
 COPY base_teste FROM '/home/base_teste.csv' DELIMITERS ',' CSV;
 
-COPY base_teste2 (
+COPY banco_tutorial (
     cpf, 
     private, 
     incompleto, 
