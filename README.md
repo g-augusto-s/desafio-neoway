@@ -21,7 +21,8 @@ CREATE TABLE banco_tutorial (
 );
 
 ##Outside docker container
-docker cp base_teste.csv d07352f24cb2:/home
+$ docker cp app/assets/base_teste_sem_header.csv 5cadd68cd755:home/
+$ docker cp app/assets/base_teste_min_sem_header.csv 5cadd68cd755:home/
 
 
 ##Inside docker again
