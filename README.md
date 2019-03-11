@@ -192,4 +192,4 @@ services:
 * Fazer a conversão do arquivo *base_texte.txt* para *base_texte.csv* com o próprio serviço em GO
 * Organizar melhor a estrutura do código
 * Criar arquivo para teste
-* A conversão de txt para para csv acabou perdendo o numero 0 antes de 6 cps que estavam em uma formatação diferente, fazendo com que não passassem no teste de validação conforme [imagem](https://drive.google.com/open?id=1-F_JC9AzqyEHh_YIqXU0wvMlm-nN2GLg)
+* A conversão de txt para para csv acabou perdendo o numero 0 antes de 6 CPF's que estavam em uma formatação diferente, fazendo com que não passassem no teste de validação conforme [imagem](https://drive.google.com/open?id=1-F_JC9AzqyEHh_YIqXU0wvMlm-nN2GLg)
