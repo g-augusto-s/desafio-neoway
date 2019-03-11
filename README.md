@@ -3,7 +3,27 @@
 
 ## Indice
 [Introdução](#introdução)
+
 [Requisitos](#requisitos)
+
+[Abordagem](#abordagem)
+
+[Pré requisitos](#pré-requisitos)
+
+[Instalando](#instalando)
+
+[Deploy](#deploy)
+
+[Estrutura relacional](#estrutura-relacional)
+
+[Arquivo docker-compose.yml](#arquivo-docker-compose.yml)
+
+[Feito com](#feito-com)
+
+[Autor](#autor)
+
+[Melhorias](#melhorias)
+
 
 ## Introdução
 
@@ -85,6 +105,7 @@ Copiar o arquivo **base_teste.csv** para a pasta app/assets/ (**Linux**)
 ``` bash
 $ cp "path_do_arquivo"/base_teste.csv app/assets/
 ```
+**Trocar HOST no arquivo docker-compose.yml para seu ip local** conforme [Arquivo docker-compose.yml](#arquivo-docker-compose.yml)
 
 Executar os comandos Docker Compose:
 ``` bash
@@ -112,11 +133,11 @@ CREATE TABLE IF NOT EXISTS base_teste (
 
 O arquivo docker-compose.yml cria baixa as imagens e cria os containers para o banco de dados com Postgres e para o serviço em GO.
 
-###Atenção com as variáveis de ambiente 
+###Atenção com as variáveis de ambiente HOST e PORT
 
-"HOST=192.168.25.109"
-"PORT=5432"
+**LEMBRA DE TROCAR AS VARIAVEIS HOST E PORT** para o IP Local e porta conveniente.
 
+*tentei substituir o HOST por localhost porém o docker não reconhecia
 
 ``` yml
 version: '3'
