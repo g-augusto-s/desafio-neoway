@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS base_teste (
 ```
 ## Docker Compose
 
-O arquivo docker-compose.yml cria baixa as imagens e cria os containers para o banco de dados com Postgres e para o serviço em GO.
+O arquivo docker-compose.yml baixa as imagens e cria os containers para o banco de dados com Postgres e para o serviço em GO.
 
 ### Atenção com as variáveis de ambiente HOST e PORT
 
@@ -190,3 +190,6 @@ services:
 ## Melhorias
 
 * Fazer a conversão do arquivo *base_texte.txt* para *base_texte.csv* com o próprio serviço em GO
+* Organizar melhor a estrutura do código
+* Criar arquivo para teste
+* A conversão de txt para para csv acabou perdendo o numero 0 antes de 6 cps que estavam em uma formatação diferente, fazendo com que não passassem no teste de validação conforme [imagem](https://drive.google.com/open?id=1-F_JC9AzqyEHh_YIqXU0wvMlm-nN2GLg)
