@@ -1,8 +1,14 @@
 # Desafio Técnico - Processo Seletivo Neoway - Analista de Sistemas
 
+
+## Indice
+[Introdução](#introdução)
+[Requisitos](#requisitos)
+
 ## Introdução
 
 Esse projeto foi construido para o processo seletivo da empresa Neoway, vaga de Analista de Sistemas, seguindo os requisitos descritos na seção abaixo.
+
 
 ### Requisitos:
 - Criar um serviço em GO que receba um arquivo csv/txt de entrada (Arquivo Anexo)
@@ -101,6 +107,59 @@ CREATE TABLE IF NOT EXISTS base_teste (
     loja_mais_frequente VARCHAR(255),
     loja_da_ultima_compra VARCHAR(255)
 );
+```
+## Arquivo docker-compose.yml
+
+O arquivo docker-compose.yml cria baixa as imagens e cria os containers para o banco de dados com Postgres e para o serviço em GO.
+
+###Atenção com as variáveis de ambiente 
+
+"HOST=192.168.25.109"
+"PORT=5432"
+
+
+``` yml
+version: '3'
+
+services:
+  db:
+    image: neoway-db
+    container_name: neoway-container-db
+    restart: 'always'
+    ports:
+      - '5432:5432'
+    environment:
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_DB=neoway-db"
+      - "POSTGRES_PASSWORD=postgres"
+    build: './db'
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./app/assets/:/home/
+      - ./db/postgresql-data:/var/lib/postgresql/data
+
+  backend:
+    build: ./app/
+    image: go-env
+    container_name: go-env-container
+    volumes:
+      - ./app/:/go/src/app/
+    command: bash -c "sleep 3; go run main.go"
+    ports:
+      - "8080:8080"
+    environment:
+      - "CSV_PATH=/home/base_teste.csv"
+      - "HOST=192.168.25.109"
+      - "PORT=5432"
+      - "USER=postgres"
+      - "PASSWORD=postgres"
+      - "DBNAME=neoway-db"
+      - "TABLENAME=base_teste"
+    restart: on-failure
+    depends_on:
+      - db
+    links:
+      - db
 ```
 
 ## Feito com

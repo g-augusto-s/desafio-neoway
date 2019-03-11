@@ -34,7 +34,7 @@ services:
       - "PASSWORD=postgres"
       - "DBNAME=neoway-db"
       - "TABLENAME=base_teste"
-    # restart: on-failure
+    restart: on-failure
     depends_on:
       - db
     links:
