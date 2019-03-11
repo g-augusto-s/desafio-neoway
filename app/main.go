@@ -10,6 +10,7 @@ import (
     "gopkg.in/Nhanderu/brdoc.v1"
 )
 
+// Create Connect struct to hold environment variables for DB connection
 type Connect struct {
     HOST, PORT, USER, PASSWORD, DBNAME, TABLENAME, CSV_PATH  string    
 }
@@ -36,6 +37,7 @@ func (c *Connect) dbConnect() {
     fmt.Println("Successfully connected inside method!")
 }
 
+// Main function
 func main() {
     c := Connect {
         os.Getenv("HOST"),
@@ -69,12 +71,14 @@ func main() {
         // }
 }
 
+// Check any erros returned
 func check(e error) {
     if e != nil {
         panic(e)
     }
 }
 
+// Persist data from $CSV_PATH into PostgresDB
 func copyToDB(host, port, user, password, dbname, table_name, csv_path string){
 
     psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
@@ -124,6 +128,7 @@ func copyToDB(host, port, user, password, dbname, table_name, csv_path string){
     }
 }
 
+// Verify if the CPF data is valid and delete those rows which not
 func cpfIsValid(host, port, user, password, dbname, table_name, csv_path string){
     psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
       "password=%s dbname=%s sslmode=disable",
@@ -185,6 +190,7 @@ func cpfIsValid(host, port, user, password, dbname, table_name, csv_path string)
     check(err)
 }
 
+// Verify if the CNPJ data is valid and delete those rows which not
 func cnpjIsValid(host, port, user, password, dbname, table_name, csv_path string){
     psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
         "password=%s dbname=%s sslmode=disable",

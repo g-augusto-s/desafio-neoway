@@ -1,43 +1,66 @@
-mkdir db/postgresql-data
+# Desafio Técnico - Processo Seletivo Neoway - Analista de Sistemas
 
-docker-compose up
+One Paragraph of project description goes here
 
-docker ps 
+## Introdução
 
-docker exec -it [container-id] bash
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-psql -U postgres
+### Abordagem
 
-\c neoway-db
+A step by step series of examples that tell you how to get a development env running
 
-CREATE TABLE banco_tutorial (
-    id SERIAL PRIMARY KEY,
-    cpf VARCHAR(255),
-    private INT,  
-    incompleto INT,
-    data_da_ultima_compra VARCHAR(255),
-    ticket_medio VARCHAR(255),
-    ticket_da_ultima_compra VARCHAR(255),
-    loja_mais_frequente VARCHAR(255),
-    loja_da_ultima_compra VARCHAR(255)
-);
+Say what the step will be
 
-##Outside docker container
-$ docker cp ./app/assets/base_teste_min_sem_header.csv neoway-container-db:home/
-$ docker cp ./app/assets/base_teste_sem_header.csv neoway-container-db:home/
+```
+Give the example
+```
 
+And repeat
 
-##Inside docker again
-COPY base_teste FROM '/home/base_teste.csv' DELIMITERS ',' CSV;
+```
+until finished
+```
 
-COPY banco_tutorial (
-    cpf, 
-    private, 
-    incompleto, 
-    data_da_ultima_compra, 
-    ticket_medio, 
-    ticket_da_ultima_compra, 
-    loja_mais_frequente, 
-    loja_da_ultima_compra
-) FROM '/home/base_teste.csv' DELIMITERS ',' CSV;
+### Instalando
 
+Explain what these tests test and why
+
+```
+Give an example
+```
+
+## Deploy
+
+Add additional notes about how to deploy this on a live system
+
+```
+Give an example
+```
+
+## Estrutura relacional
+
+Add additional notes about how to deploy this on a live system
+
+```
+Give an example
+```
+
+## Feito com
+
+* [lib/pq](https://github.com/lib/pq) - A pure Go postgres driver for Go's database/sql package
+* [BR Doc](https://github.com/Nhanderu/brdoc) - CPF, CNPJ and CEP validator for Go!
+* [Docker CE](https://docs.docker.com/install/)
+* [Docker Compose](https://docs.docker.com/compose/install/)
+* [Golang Docker Image](https://hub.docker.com/_/golang)
+* [Postgres](https://hub.docker.com/_/postgres)
+
+## Autor 
+
+* **Guilherme Augusto** -[g-augusto-s](https://github.com/g-augusto-s/)
+
+## Melhorias
+
+* A
+* B
+* C
