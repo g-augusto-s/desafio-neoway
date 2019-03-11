@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS base_teste (
 
 O arquivo docker-compose.yml cria baixa as imagens e cria os containers para o banco de dados com Postgres e para o serviço em GO.
 
-###Atenção com as variáveis de ambiente HOST e PORT
+### Atenção com as variáveis de ambiente HOST e PORT
 
 **LEMBRA DE TROCAR AS VARIAVEIS HOST E PORT** para o IP Local e porta conveniente.
 
