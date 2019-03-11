@@ -61,22 +61,29 @@ Para utilizar-se do serviço criado é necessário ter instalado os seguintes pr
 Para instalar o serviço, basta clonar o repositorio
 
 ``` shell
-git clone https://github.com/g-augusto-s/desafio-neoway.git
+$ git clone https://github.com/g-augusto-s/desafio-neoway.git
 ```
 
 ## Deploy
 
-Para fazer o deploy da aplicação, basta mudar para o diretorio criado (**Linux**) e rodar os comandos **docker-compose build && docker-compose up**:
+Para fazer o deploy da aplicação, basta mudar para o diretorio criado e rodar os comandos **docker-compose build && docker-compose up**:
 
 Mudar para o diretorio criado (**Linux**)
 
 ``` shell
-cd desafio-neoway/
+$ cd desafio-neoway/$ 
 ```
 
+Copiar o arquivo **base_teste.csv** para a pasta app/assets/ (**Linux**)
+
 ``` bash
-docker-compose build
-docker-compose up
+$ cp "path_do_arquivo"/base_teste.csv app/assets/
+```
+
+Executar os comandos Docker Compose:
+``` bash
+$ docker-compose build
+$ docker-compose up
 ```
 
 ## Estrutura relacional
