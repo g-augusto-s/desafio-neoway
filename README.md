@@ -2,27 +2,18 @@
 
 
 ## Indice
-[Introdução](#introdução)
 
-[Requisitos](#requisitos)
-
-[Abordagem](#abordagem)
-
-[Pré requisitos](#pré-requisitos)
-
-[Instalando](#instalando)
-
-[Deploy](#deploy)
-
-[Estrutura relacional](#estrutura-relacional)
-
-[Docker Compose](#docker-compose)
-
-[Feito com](#feito-com)
-
-[Autor](#autor)
-
-[Melhorias](#melhorias)
+* [Introdução](#introdução)
+* [Requisitos](#requisitos)
+* [Abordagem](#abordagem)
+* [Pré requisitos](#pré-requisitos)
+* [Instalando](#instalando)
+* [Deploy](#deploy)
+* [Estrutura relacional](#estrutura-relacional)
+* [Docker Compose](#docker-compose)
+* [Feito com](#feito-com)
+* [Autor](#autor)
+* [Melhorias](#melhorias)
 
 
 ## Introdução
@@ -68,7 +59,7 @@ Esta seção visa explicar qual a abordagem adotada para a resolução do proble
 
 Segundo conversa inicial com a Rafaela Leal do time de *Gente e Gestão*, essa vaga exige, além das habilidades técnicas, autonomia, aprendizado rápido e resolução de problemas com prazos curtos. 
 
-Com base nisso, e nos requisitos expostos na seção acima, minha abordagem inicial para ganhar tempo, foi transformar o arquivo dado *base_teste.txt* em um formato *base_teste.csv* utilizando-se do [Google Sheets](https://www.google.com/sheets/about/), já que essa tinha apenas 3 dias para aprender toda a linguagem e desenvolver a solução de uma forma funcional. 
+Com base nisso, e nos requisitos expostos na seção acima, minha abordagem inicial para ganhar tempo, foi transformar o arquivo dado *base_teste.txt* em um formato *base_teste.csv* utilizando-se do [Google Sheets](https://www.google.com/sheets/about/), já que tinha apenas 3 dias para aprender toda a linguagem e desenvolver a solução de uma forma funcional. 
 
 - Primeiramente apaguei a primeira linha que continham os nomes das colunas
 - Importei o arquivo no [Google Sheets](https://www.google.com/sheets/about/)
@@ -100,10 +91,10 @@ Mudar para o diretorio criado (**Linux**)
 $ cd desafio-neoway/
 ```
 
-O repositorio já está com o arquivo na pasta, mas caso precise copiar o arquivo **base_teste.csv** para a pasta app/assets/ (**Linux**)
+O repositorio já está com o arquivo **base_teste.csv** na pasta "app/assets/". Mas caso precise copiar : (**Linux**)
 
 ``` bash
-$ cp "path_do_arquivo"/base_teste.csv app/assets/
+$ cp "caminho_do_arquivo"/base_teste.csv app/assets/
 ```
 **Trocar HOST no arquivo docker-compose.yml para seu ip local** conforme [Docker Compose](#docker-compose)
 
@@ -113,6 +104,7 @@ $ docker-compose up
 ```
 
 ## Estrutura relacional
+
 O arquivo **init.sql** cria a tabela necessaria no banco de dados ao rodar o comando:
 
 ``` sql
@@ -134,7 +126,7 @@ O arquivo docker-compose.yml cria baixa as imagens e cria os containers para o b
 
 ### Atenção com as variáveis de ambiente HOST e PORT
 
-LEMBRA DE TROCAR AS VARIAVEIS **HOST** E PORT para seu IP Local e porta conveniente.
+TROCAR AS VARIAVEIS **HOST** E **PORT** para seu **IP Local** e porta conveniente no arquivo "./docker-compose.yml" linhas 31 e 32.
 
 OBS: tentei substituir o HOST por localhost porém o docker não reconhecia
 
@@ -169,7 +161,7 @@ services:
       - "8080:8080"
     environment:
       - "CSV_PATH=/home/base_teste.csv"
-      - "HOST=IP_Local"
+      - "HOST=TROCAR SEU IP LOCAL AQUI"
       - "PORT=5432"
       - "USER=postgres"
       - "PASSWORD=postgres"
@@ -193,8 +185,8 @@ services:
 
 ## Autor 
 
-* **Guilherme Augusto** -[g-augusto-s](https://github.com/g-augusto-s/)
+* **Guilherme Augusto** - [gaugustos](https://www.linkedin.com/in/gaugustos/)
 
 ## Melhorias
 
-* Fazer a conversão do arquivo *base_texte.txt* para *base_texte.csv* com o serviço em GO
+* Fazer a conversão do arquivo *base_texte.txt* para *base_texte.csv* com o próprio serviço em GO
