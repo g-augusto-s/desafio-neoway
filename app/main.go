@@ -72,6 +72,7 @@ func copyToDB(host, port, user, password, dbname, table_name, csv_path string){
 
     row := db.QueryRow(sqlStatement)
 
+    // Verify if table is empty
     switch err := row.Scan(&returnedCpf); err {
         case sql.ErrNoRows:
             fmt.Println("Table empty")
@@ -125,16 +126,14 @@ func cpfIsValid(host, port, user, password, dbname, table_name, csv_path string)
     defer rows.Close()
 
     i:=0
+    // Verify all CPF in the table
     for rows.Next() {
         var returnedCpf string
         var returnedID int
 
         err = rows.Scan(&returnedCpf, &returnedID)
-        if err != nil {
-            // handle this error
-            panic(err)
-        }
-
+        check(err)
+        // If the CPF doenst exists, the row is delete
         if !(brdoc.IsCPF(returnedCpf)){
             sqlStatement := fmt.Sprintf(`
                 DELETE FROM %s
@@ -144,9 +143,7 @@ func cpfIsValid(host, port, user, password, dbname, table_name, csv_path string)
 
             _,err = db.Exec(sqlStatement)
 
-            if err != nil {
-                panic(err)
-            }
+            check(err)
 
             fmt.Printf("Successfully delete rows %v with unvalid CPF values\n", returnedID )
             i++
@@ -195,6 +192,7 @@ func cnpjIsValid(host, port, user, password, dbname, table_name, csv_path string
         err = rows.Scan(&moreFrequentCNPJ, &lastBuyCNPJ, &returnedID)
         check(err)
 
+        // If the CNPJ doenst exists, the row is delete
         if !(brdoc.IsCNPJ(moreFrequentCNPJ) || brdoc.IsCNPJ(lastBuyCNPJ)){
             sqlStatement := fmt.Sprintf(`
                 DELETE FROM %s
