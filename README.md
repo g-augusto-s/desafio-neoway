@@ -96,7 +96,7 @@ O repositorio já está com o arquivo **base_teste.csv** na pasta "app/assets/".
 ``` bash
 $ cp "caminho_do_arquivo"/base_teste.csv "pasta_local_onde_foi_baixado_o_repositorio"/desafio-neoway/app/assets/
 ```
-**Trocar HOST no arquivo docker-compose.yml para seu ip local** conforme [Docker Compose](#docker-compose)
+**Trocar HOST no arquivo docker-compose.yml para seu ip local conforme:** [Docker Compose](#docker-compose)
 
 Executar o comando Docker Compose:
 ``` bash
