@@ -27,13 +27,13 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - "CSV_PATH=/home/base_teste_sem_header.csv"
+      - "CSV_PATH=/home/base_teste.csv"
       - "HOST=192.168.25.109"
       - "PORT=5432"
       - "USER=postgres"
       - "PASSWORD=postgres"
       - "DBNAME=neoway-db"
-      - "TABLENAME=banco_tutorial"
+      - "TABLENAME=base_teste"
     # restart: on-failure
     depends_on:
       - db

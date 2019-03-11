@@ -3,7 +3,6 @@ package main
 import (
     "database/sql"
     "fmt"
-    "io/ioutil"
     "os"
     "time"
     _ "github.com/lib/pq"
@@ -13,28 +12,6 @@ import (
 // Create Connect struct to hold environment variables for DB connection
 type Connect struct {
     HOST, PORT, USER, PASSWORD, DBNAME, TABLENAME, CSV_PATH  string    
-}
-
-func (c *Connect) dbConnect() {
-
-    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
-      "password=%s dbname=%s sslmode=disable",
-      c.HOST, c.PORT, c.USER, c.PASSWORD, c.DBNAME)
-
-    db, err := sql.Open("postgres", psqlInfo)
-
-    if err != nil {
-      panic(err)
-    }
-    
-    defer db.Close()
-    
-    err = db.Ping()
-    if err != nil {
-        panic(err)
-    }
-
-    fmt.Println("Successfully connected inside method!")
 }
 
 // Main function
@@ -55,7 +32,6 @@ func main() {
    
     // Verify and copy values to table
     copyToDB(c.HOST, c.PORT, c.USER, c.PASSWORD, c.DBNAME, c.TABLENAME, c.CSV_PATH)
-    // importCSV(c.HOST, c.PORT, c.USER, c.PASSWORD, c.DBNAME, c.TABLENAME, c.CSV_PATH)
     
     // Validate CPF & CNPJ
     cpfIsValid(c.HOST, c.PORT, c.USER, c.PASSWORD, c.DBNAME, c.TABLENAME, c.CSV_PATH)
@@ -65,10 +41,6 @@ func main() {
     fmt.Printf("Main function stops at: %v",time.Now())
     fmt.Println()
     fmt.Println()
-    
-    // for i:=0; i<10 ; i++{
-        //     insertData("placeholder", "placeholder", "placeholder", "placeholder", "placeholder", "placeholder", i, i+10)
-        // }
 }
 
 // Check any erros returned
@@ -244,116 +216,4 @@ func cnpjIsValid(host, port, user, password, dbname, table_name, csv_path string
     // get any error encountered during iteration
     err = rows.Err()
     check(err)
-}
-
-
-
-
-
-
-
-func importCSV(host, port, user, password, dbname, table_name, csv_path string){
-
-    csv_path = "/home/base_teste_min_sem_header.csv"
-    table_name = "banco_tutorial_min"
-
-    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
-      "password=%s dbname=%s sslmode=disable",
-      host, port, user, password, dbname)
-
-    db, err := sql.Open("postgres", psqlInfo)
-
-    check(err)
-    defer db.Close()
-    
-    err = db.Ping()
-    check(err)
-    
-    fmt.Println()
-    fmt.Println("Successfully connected for import CSV!")
-    fmt.Println()
-
-    dat, err := ioutil.ReadFile("/go/src/app/assets/base_teste_min_sem_header.csv") // CSV_PATH=/go/src/app/assets/base_teste_min_sem_header.csv
-    check(err)
-
-    f, err := os.Open("/go/src/app/assets/base_teste_min_sem_header.csv")
-    check(err)
-
-    fmt.Printf("File dat value: %v \n", string(dat))
-    fmt.Printf("File dat type: %T\n", dat)
-    fmt.Printf("File f value: %v \n File f type: %T\n", *f, *f)
-    fmt.Printf("File f value: %v \n File f type: %T\n", f, f)
-
-    // Load the CSV file directly into PostgreSQL, into factual.places
-    sqlStatement := fmt.Sprintf(`
-        COPY %s (
-            cpf, 
-            private, 
-            incompleto, 
-            data_da_ultima_compra, 
-            ticket_medio, 
-            ticket_da_ultima_compra, 
-            loja_mais_frequente, 
-            loja_da_ultima_compra
-        ) FROM '%s' DELIMITERS ',' CSV;`, 
-    table_name, csv_path)
-
-    _,err = db.Exec(sqlStatement)
-
-    if err != nil {
-        panic(err)
-    }
-    fmt.Println("Import CSV with success!")
-}
-
-func insertData(cpf, data_da_ultima_compra, ticket_medio, ticket_da_ultima_compra, loja_mais_frequente, loja_da_ultima_compra string, private, incompleto int){
-    
-
-    // Get env variables
-    host     := os.Getenv("HOST")
-    port     := os.Getenv("PORT")
-    user     := os.Getenv("USER")
-    password := os.Getenv("PASSWORD")
-    dbname   := os.Getenv("DBNAME")
-
-    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
-      "password=%s dbname=%s sslmode=disable",
-      host, port, user, password, dbname)
-
-    db, err := sql.Open("postgres", psqlInfo)
-
-    if err != nil {
-      panic(err)
-    }
-    defer db.Close()
-    
-    err = db.Ping()
-    if err != nil {
-        panic(err)
-    }
-    
-    fmt.Println("Successfully connected!")
-
-    sqlStatement := `
-        INSERT INTO banco_tutorial (
-            cpf, 
-            private, 
-            incompleto, 
-            data_da_ultima_compra, 
-            ticket_medio, 
-            ticket_da_ultima_compra, 
-            loja_mais_frequente, 
-            loja_da_ultima_compra
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING id
-    `
-    id := 0
-    err = db.QueryRow(sqlStatement, cpf, private, incompleto, data_da_ultima_compra, ticket_medio, ticket_da_ultima_compra, loja_mais_frequente, loja_da_ultima_compra).Scan(&id)
-
-    if err != nil {
-        panic(err)
-    }
-
-    fmt.Println("New record ID is:", id)
 }
