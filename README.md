@@ -71,7 +71,7 @@ Para fazer o deploy da aplicação, basta mudar para o diretorio criado e rodar 
 Mudar para o diretorio criado (**Linux**)
 
 ``` shell
-$ cd desafio-neoway/$ 
+$ cd desafio-neoway/
 ```
 
 Copiar o arquivo **base_teste.csv** para a pasta app/assets/ (**Linux**)
