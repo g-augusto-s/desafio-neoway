@@ -83,7 +83,7 @@ $ git clone https://github.com/g-augusto-s/desafio-neoway.git
 
 ## Deploy
 
-Para fazer o deploy da aplicação, basta mudar para o diretorio criado e rodar os comandos **docker-compose build && docker-compose up**:
+Para fazer o deploy da aplicação, basta mudar para o diretorio criado e rodar o comando **docker-compose up**:
 
 Mudar para o diretorio criado (**Linux**)
 
@@ -94,7 +94,7 @@ $ cd desafio-neoway/
 O repositorio já está com o arquivo **base_teste.csv** na pasta "app/assets/". Mas caso precise copiar : (**Linux**)
 
 ``` bash
-$ cp "caminho_do_arquivo"/base_teste.csv app/assets/
+$ cp "caminho_do_arquivo"/base_teste.csv "pasta_local_onde_foi_baixado_o_repositorio"/desafio-neoway/app/assets/
 ```
 **Trocar HOST no arquivo docker-compose.yml para seu ip local** conforme [Docker Compose](#docker-compose)
 
