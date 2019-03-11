@@ -16,7 +16,7 @@
 
 [Estrutura relacional](#estrutura-relacional)
 
-[Arquivo docker-compose.yml](#arquivo-docker-compose.yml)
+[Docker Compose](#docker-compose)
 
 [Feito com](#feito-com)
 
@@ -105,7 +105,7 @@ Copiar o arquivo **base_teste.csv** para a pasta app/assets/ (**Linux**)
 ``` bash
 $ cp "path_do_arquivo"/base_teste.csv app/assets/
 ```
-**Trocar HOST no arquivo docker-compose.yml para seu ip local** conforme [Arquivo docker-compose.yml](#arquivo-docker-compose.yml)
+**Trocar HOST no arquivo docker-compose.yml para seu ip local** conforme [Docker Compose](#docker-compose)
 
 Executar os comandos Docker Compose:
 ``` bash
@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS base_teste (
     loja_da_ultima_compra VARCHAR(255)
 );
 ```
-## Arquivo docker-compose.yml
+## Docker Compose
 
 O arquivo docker-compose.yml cria baixa as imagens e cria os containers para o banco de dados com Postgres e para o serviço em GO.
 
