@@ -3,12 +3,9 @@ package main
 import (
     "database/sql"
     "fmt"
-    // "bufio"
-    // "io"
     "io/ioutil"
     "os"
     "time"
-    // "strings"
     _ "github.com/lib/pq"
     "gopkg.in/Nhanderu/brdoc.v1"
 )
@@ -37,12 +34,6 @@ func (c *Connect) dbConnect() {
     }
 
     fmt.Println("Successfully connected inside method!")
-}
-
-func check(e error) {
-    if e != nil {
-        panic(e)
-    }
 }
 
 func main() {
@@ -78,59 +69,11 @@ func main() {
         // }
 }
 
-
-func insertData(cpf, data_da_ultima_compra, ticket_medio, ticket_da_ultima_compra, loja_mais_frequente, loja_da_ultima_compra string, private, incompleto int){
-    
-
-    // Get env variables
-    host     := os.Getenv("HOST")
-    port     := os.Getenv("PORT")
-    user     := os.Getenv("USER")
-    password := os.Getenv("PASSWORD")
-    dbname   := os.Getenv("DBNAME")
-
-    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
-      "password=%s dbname=%s sslmode=disable",
-      host, port, user, password, dbname)
-
-    db, err := sql.Open("postgres", psqlInfo)
-
-    if err != nil {
-      panic(err)
+func check(e error) {
+    if e != nil {
+        panic(e)
     }
-    defer db.Close()
-    
-    err = db.Ping()
-    if err != nil {
-        panic(err)
-    }
-    
-    fmt.Println("Successfully connected!")
-
-    sqlStatement := `
-        INSERT INTO banco_tutorial (
-            cpf, 
-            private, 
-            incompleto, 
-            data_da_ultima_compra, 
-            ticket_medio, 
-            ticket_da_ultima_compra, 
-            loja_mais_frequente, 
-            loja_da_ultima_compra
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING id
-    `
-    id := 0
-    err = db.QueryRow(sqlStatement, cpf, private, incompleto, data_da_ultima_compra, ticket_medio, ticket_da_ultima_compra, loja_mais_frequente, loja_da_ultima_compra).Scan(&id)
-
-    if err != nil {
-        panic(err)
-    }
-
-    fmt.Println("New record ID is:", id)
 }
-
 
 func copyToDB(host, port, user, password, dbname, table_name, csv_path string){
 
@@ -180,6 +123,128 @@ func copyToDB(host, port, user, password, dbname, table_name, csv_path string){
             panic(err)
     }
 }
+
+func cpfIsValid(host, port, user, password, dbname, table_name, csv_path string){
+    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
+      "password=%s dbname=%s sslmode=disable",
+      host, port, user, password, dbname)
+
+    db, err := sql.Open("postgres", psqlInfo)
+
+    check(err)
+    defer db.Close()
+    
+    err = db.Ping()
+    check(err)
+    
+    fmt.Println()
+    fmt.Println("Successfully connected for CPF validation!")
+
+    sqlStatement := fmt.Sprintf(`SELECT cpf, id FROM %s;`, table_name)
+
+    rows,err := db.Query(sqlStatement)
+    check(err)
+
+    defer rows.Close()
+
+    i:=0
+    for rows.Next() {
+        var returnedCpf string
+        var returnedID int
+
+        err = rows.Scan(&returnedCpf, &returnedID)
+        if err != nil {
+            // handle this error
+            panic(err)
+        }
+
+        if !(brdoc.IsCPF(returnedCpf)){
+            sqlStatement := fmt.Sprintf(`
+                DELETE FROM %s
+                WHERE id=%d
+            `, 
+            table_name, returnedID)
+
+            _,err = db.Exec(sqlStatement)
+
+            if err != nil {
+                panic(err)
+            }
+
+            fmt.Printf("Successfully delete rows %v with unvalid CPF values\n", returnedID )
+            i++
+        }
+    }
+    if i>0{
+        fmt.Printf("Deleted %v rows with unvalid CPF values\n", i )
+    }
+
+
+    // get any error encountered during iteration
+    err = rows.Err()
+    check(err)
+}
+
+func cnpjIsValid(host, port, user, password, dbname, table_name, csv_path string){
+    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
+        "password=%s dbname=%s sslmode=disable",
+        host, port, user, password, dbname)
+
+    db, err := sql.Open("postgres", psqlInfo)
+
+    check(err)
+    defer db.Close()
+    
+    err = db.Ping()
+    check(err)
+    
+    fmt.Println()
+    fmt.Println("Successfully connected for CNPJ validation!")
+
+    sqlStatement := fmt.Sprintf(`SELECT loja_mais_frequente, loja_da_ultima_compra, id FROM %s;`, table_name)
+
+    rows,err := db.Query(sqlStatement)
+    check(err)
+
+    defer rows.Close()
+
+    i:=0
+    for rows.Next() {
+        var moreFrequentCNPJ string
+        var lastBuyCNPJ string
+        var returnedID int
+
+        err = rows.Scan(&moreFrequentCNPJ, &lastBuyCNPJ, &returnedID)
+        check(err)
+
+        if !(brdoc.IsCNPJ(moreFrequentCNPJ) || brdoc.IsCNPJ(lastBuyCNPJ)){
+            sqlStatement := fmt.Sprintf(`
+                DELETE FROM %s
+                WHERE id=%d
+            `, 
+            table_name, returnedID)
+
+            _,err = db.Exec(sqlStatement)
+            check(err)
+
+            fmt.Printf("Successfully delete rows %v with unvalid CNPJ value\n", returnedID )
+            i++
+        }
+    }
+
+    if i>0{
+        fmt.Printf("Deleted %v rows with unvalid CNPJ values\n", i )
+    }
+    // get any error encountered during iteration
+    err = rows.Err()
+    check(err)
+}
+
+
+
+
+
+
 
 func importCSV(host, port, user, password, dbname, table_name, csv_path string){
 
@@ -235,138 +300,54 @@ func importCSV(host, port, user, password, dbname, table_name, csv_path string){
     fmt.Println("Import CSV with success!")
 }
 
-func cpfIsValid(host, port, user, password, dbname, table_name, csv_path string){
+func insertData(cpf, data_da_ultima_compra, ticket_medio, ticket_da_ultima_compra, loja_mais_frequente, loja_da_ultima_compra string, private, incompleto int){
+    
+
+    // Get env variables
+    host     := os.Getenv("HOST")
+    port     := os.Getenv("PORT")
+    user     := os.Getenv("USER")
+    password := os.Getenv("PASSWORD")
+    dbname   := os.Getenv("DBNAME")
+
     psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
       "password=%s dbname=%s sslmode=disable",
       host, port, user, password, dbname)
 
     db, err := sql.Open("postgres", psqlInfo)
 
-    check(err)
+    if err != nil {
+      panic(err)
+    }
     defer db.Close()
     
     err = db.Ping()
-    check(err)
+    if err != nil {
+        panic(err)
+    }
     
-    fmt.Println()
-    fmt.Println("Successfully connected for CPF validation!")
+    fmt.Println("Successfully connected!")
 
-    sqlStatement := `SELECT cpf, id FROM banco_tutorial;`
-
-    rows,err := db.Query(sqlStatement)
+    sqlStatement := `
+        INSERT INTO banco_tutorial (
+            cpf, 
+            private, 
+            incompleto, 
+            data_da_ultima_compra, 
+            ticket_medio, 
+            ticket_da_ultima_compra, 
+            loja_mais_frequente, 
+            loja_da_ultima_compra
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING id
+    `
+    id := 0
+    err = db.QueryRow(sqlStatement, cpf, private, incompleto, data_da_ultima_compra, ticket_medio, ticket_da_ultima_compra, loja_mais_frequente, loja_da_ultima_compra).Scan(&id)
 
     if err != nil {
-        // handle this error better than this
         panic(err)
     }
 
-    defer rows.Close()
-
-    i:=0
-    for rows.Next() {
-        var returnedCpf string
-        var returnedID int
-
-        err = rows.Scan(&returnedCpf, &returnedID)
-        if err != nil {
-            // handle this error
-            panic(err)
-        }
-        // fmt.Printf("CPF: %v - ID: %v - É valido? %v\n", returnedCpf, returnedID, brdoc.IsCPF(returnedCpf))
-
-        if !(brdoc.IsCPF(returnedCpf)){
-            sqlStatement := fmt.Sprintf(`
-                DELETE FROM %s
-                WHERE id=%s
-            `, 
-            table_name, returnedID)
-
-            _,err = db.Exec(sqlStatement)
-
-            if err != nil {
-                panic(err)
-            }
-
-            fmt.Printf("Successfully delete rows %v with unvalid CPF values\n", returnedID )
-            i++
-        }
-    }
-    if i>0{
-        fmt.Printf("Deleted %v rows with unvalid CPF values\n", i )
-    }
-
-
-    // get any error encountered during iteration
-    err = rows.Err()
-    if err != nil {
-        panic(err)
-    }
-}
-
-func cnpjIsValid(host, port, user, password, dbname, table_name, csv_path string){
-    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
-        "password=%s dbname=%s sslmode=disable",
-        host, port, user, password, dbname)
-
-    db, err := sql.Open("postgres", psqlInfo)
-
-    check(err)
-    defer db.Close()
-    
-    err = db.Ping()
-    check(err)
-    
-    fmt.Println()
-    fmt.Println("Successfully connected for CNPJ validation!")
-
-    sqlStatement := `SELECT loja_mais_frequente, loja_da_ultima_compra, id FROM banco_tutorial;`
-
-    rows,err := db.Query(sqlStatement)
-
-    if err != nil {
-        // handle this error better than this
-        panic(err)
-    }
-
-    defer rows.Close()
-
-    i:=0
-    for rows.Next() {
-        var moreFrequentCNPJ string
-        var lastBuyCNPJ string
-        var returnedID int
-
-        err = rows.Scan(&moreFrequentCNPJ, &lastBuyCNPJ, &returnedID)
-        if err != nil {
-            // handle this error
-            panic(err)
-        }
-        // fmt.Printf("CNPJ mais frequente: %v - É valido? %v / CNPJ ultima compra: %v - É valido? %v- ID: %v\n", moreFrequentCNPJ, brdoc.IsCNPJ(moreFrequentCNPJ), lastBuyCNPJ, brdoc.IsCNPJ(lastBuyCNPJ), returnedID)
-        
-        if !(brdoc.IsCNPJ(moreFrequentCNPJ) || brdoc.IsCNPJ(lastBuyCNPJ)){
-            sqlStatement := fmt.Sprintf(`
-                DELETE FROM %s
-                WHERE id=%s
-            `, 
-            table_name, returnedID)
-
-            _,err = db.Exec(sqlStatement)
-
-            if err != nil {
-                panic(err)
-            }
-
-            fmt.Printf("Successfully delete rows %v with unvalid CNPJ value\n", returnedID )
-            i++
-        }
-    }
-
-    if i>0{
-        fmt.Printf("Deleted %v rows with unvalid CNPJ values\n", i )
-    }
-    // get any error encountered during iteration
-    err = rows.Err()
-    if err != nil {
-        panic(err)
-    }
+    fmt.Println("New record ID is:", id)
 }

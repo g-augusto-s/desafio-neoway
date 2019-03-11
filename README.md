@@ -1,3 +1,5 @@
+mkdir db/postgresql-data
+
 docker-compose up
 
 docker ps 
@@ -39,10 +41,3 @@ COPY banco_tutorial (
     loja_da_ultima_compra
 ) FROM '/home/base_teste.csv' DELIMITERS ',' CSV;
 
-
-<!-- ALTER TABLE base_teste ADD COLUMN id SERIAL PRIMARY KEY; -->
-
-<!-- DROP NULL ROWS -->
-<!-- UPDATE base_teste SET data_da_ultima_compra = NULL where data_da_ultima_compra = 'NULL'; -->
-
-<!-- elect cast(i as text),cast(t as int)from test; -->
