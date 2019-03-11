@@ -100,16 +100,15 @@ Mudar para o diretorio criado (**Linux**)
 $ cd desafio-neoway/
 ```
 
-Copiar o arquivo **base_teste.csv** para a pasta app/assets/ (**Linux**)
+O repositorio já está com o arquivo na pasta, mas caso precise copiar o arquivo **base_teste.csv** para a pasta app/assets/ (**Linux**)
 
 ``` bash
 $ cp "path_do_arquivo"/base_teste.csv app/assets/
 ```
 **Trocar HOST no arquivo docker-compose.yml para seu ip local** conforme [Docker Compose](#docker-compose)
 
-Executar os comandos Docker Compose:
+Executar o comando Docker Compose:
 ``` bash
-$ docker-compose build
 $ docker-compose up
 ```
 
