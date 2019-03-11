@@ -135,9 +135,9 @@ O arquivo docker-compose.yml cria baixa as imagens e cria os containers para o b
 
 ### Atenção com as variáveis de ambiente HOST e PORT
 
-**LEMBRA DE TROCAR AS VARIAVEIS HOST E PORT** para o IP Local e porta conveniente.
+LEMBRA DE TROCAR AS VARIAVEIS **HOST** E PORT para o IP Local e porta conveniente.
 
-*tentei substituir o HOST por localhost porém o docker não reconhecia
+OBS: tentei substituir o HOST por localhost porém o docker não reconhecia
 
 ``` yml
 version: '3'
@@ -170,7 +170,7 @@ services:
       - "8080:8080"
     environment:
       - "CSV_PATH=/home/base_teste.csv"
-      - "HOST=192.168.25.109"
+      - "HOST=IP_Local"
       - "PORT=5432"
       - "USER=postgres"
       - "PASSWORD=postgres"
