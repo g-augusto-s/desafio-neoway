@@ -135,7 +135,7 @@ O arquivo docker-compose.yml cria baixa as imagens e cria os containers para o b
 
 ### Atenção com as variáveis de ambiente HOST e PORT
 
-LEMBRA DE TROCAR AS VARIAVEIS **HOST** E PORT para o IP Local e porta conveniente.
+LEMBRA DE TROCAR AS VARIAVEIS **HOST** E PORT para seu IP Local e porta conveniente.
 
 OBS: tentei substituir o HOST por localhost porém o docker não reconhecia
 
