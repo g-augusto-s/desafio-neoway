@@ -3,40 +3,79 @@ package main
 import (
     "database/sql"
     "fmt"
+    // "bufio"
+    // "io"
+    "io/ioutil"
     "os"
+    "time"
     // "strings"
     _ "github.com/lib/pq"
     "gopkg.in/Nhanderu/brdoc.v1"
 )
 
 type Connect struct {
-    HOST, PORT, USER, PASSWORD, DBNAME, TABLENAME  string    
+    HOST, PORT, USER, PASSWORD, DBNAME, TABLENAME, CSV_PATH  string    
+}
+
+func (c *Connect) dbConnect() {
+
+    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
+      "password=%s dbname=%s sslmode=disable",
+      c.HOST, c.PORT, c.USER, c.PASSWORD, c.DBNAME)
+
+    db, err := sql.Open("postgres", psqlInfo)
+
+    if err != nil {
+      panic(err)
+    }
+    
+    defer db.Close()
+    
+    err = db.Ping()
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Println("Successfully connected inside method!")
+}
+
+func check(e error) {
+    if e != nil {
+        panic(e)
+    }
 }
 
 func main() {
-    // c := Connect {
-    //     os.Getenv("HOST"),
-    //     os.Getenv("PORT"),
-    //     os.Getenv("USER"),
-    //     os.Getenv("PASSWORD"),
-    //     os.Getenv("DBNAME"),
-    //     os.Getenv("TABLENAME"),
-    // }
+    c := Connect {
+        os.Getenv("HOST"),
+        os.Getenv("PORT"),
+        os.Getenv("USER"),
+        os.Getenv("PASSWORD"),
+        os.Getenv("DBNAME"),
+        os.Getenv("TABLENAME"),
+        os.Getenv("CSV_PATH"),
+    }
 
-	// p := &c
-    // Connect to DB
-    // c.dbConnect();
-
+    fmt.Println()
+    fmt.Printf("Main function starts at: %v\n",time.Now())
+    fmt.Println("<----------------- START ------------------->")
+   
     // Verify and copy values to table
-    copyToDB()
+    copyToDB(c.HOST, c.PORT, c.USER, c.PASSWORD, c.DBNAME, c.TABLENAME, c.CSV_PATH)
+    // importCSV(c.HOST, c.PORT, c.USER, c.PASSWORD, c.DBNAME, c.TABLENAME, c.CSV_PATH)
     
     // Validate CPF & CNPJ
-    cpfIsValid()
-    cnpjIsValid()
+    cpfIsValid(c.HOST, c.PORT, c.USER, c.PASSWORD, c.DBNAME, c.TABLENAME, c.CSV_PATH)
+    cnpjIsValid(c.HOST, c.PORT, c.USER, c.PASSWORD, c.DBNAME, c.TABLENAME, c.CSV_PATH)
 
+    fmt.Println("<----------------- ENDS ------------------->")
+    fmt.Printf("Main function stops at: %v",time.Now())
+    fmt.Println()
+    fmt.Println()
+    
     // for i:=0; i<10 ; i++{
-    //     insertData("placeholder", "placeholder", "placeholder", "placeholder", "placeholder", "placeholder", i, i+10)
-    // }
+        //     insertData("placeholder", "placeholder", "placeholder", "placeholder", "placeholder", "placeholder", i, i+10)
+        // }
 }
 
 
@@ -93,33 +132,23 @@ func insertData(cpf, data_da_ultima_compra, ticket_medio, ticket_da_ultima_compr
 }
 
 
-func copyToDB(){
-    // Get env variables
-    host     := os.Getenv("HOST")
-    port     := os.Getenv("PORT") //convert port to int
-    user     := os.Getenv("USER")
-    password := os.Getenv("PASSWORD")
-    dbname   := os.Getenv("DBNAME")
+func copyToDB(host, port, user, password, dbname, table_name, csv_path string){
 
     psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
       "password=%s dbname=%s sslmode=disable",
       host, port, user, password, dbname)
 
     db, err := sql.Open("postgres", psqlInfo)
+    check(err)
 
-    if err != nil {
-      panic(err)
-    }
     defer db.Close()
     
     err = db.Ping()
-    if err != nil {
-        panic(err)
-    }
+    check(err)
     
-    fmt.Println("Successfully connected!")
+    fmt.Println("Successfully connected for copy or verify DB!")
 
-    sqlStatement := `SELECT cpf FROM banco_tutorial;`
+    sqlStatement := `SELECT cpf FROM ` + table_name + " ;"
     var returnedCpf string
 
     row := db.QueryRow(sqlStatement)
@@ -128,8 +157,8 @@ func copyToDB(){
         case sql.ErrNoRows:
             fmt.Println("Table empty")
             fmt.Println()
-            sqlStatement := `
-                COPY banco_tutorial (
+            sqlStatement := fmt.Sprintf(`
+                COPY %s (
                     cpf, 
                     private, 
                     incompleto, 
@@ -138,13 +167,12 @@ func copyToDB(){
                     ticket_da_ultima_compra, 
                     loja_mais_frequente, 
                     loja_da_ultima_compra
-                ) FROM '/home/base_teste_sem_header.csv' DELIMITERS ',' CSV;
-            `
-            _,err = db.Exec(sqlStatement)
+                ) FROM '%s' DELIMITERS ',' CSV;`, 
+            table_name, csv_path)
 
-            if err != nil {
-                panic(err)
-            }
+            _,err = db.Exec(sqlStatement)
+            check(err)
+
             fmt.Println("Database successful copy")
         case nil:
             fmt.Println("Database already copy")
@@ -153,78 +181,10 @@ func copyToDB(){
     }
 }
 
-func importCSV(){
-    // Get env variables
-    // host     := os.Getenv("HOST")
-    // port,_   := strconv.Atoi(os.Getenv("PORT")) //convert port to int
-    // user     := os.Getenv("USER")
-    // password := os.Getenv("PASSWORD")
-    // dbname   := os.Getenv("DBNAME")
+func importCSV(host, port, user, password, dbname, table_name, csv_path string){
 
-    // psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-    //   "password=%s dbname=%s sslmode=disable",
-    //   host, port, user, password, dbname)
-
-    // db, err := sql.Open("postgres", psqlInfo)
-
-    // if err != nil {
-    //   panic(err)
-    // }
-    // defer db.Close()
-    
-    // err = db.Ping()
-    // if err != nil {
-    //     panic(err)
-    // }
-    
-    // fmt.Println("Successfully connected!")
-
-    // // Copy the CSV file into the /tmp directory, so the server has access to it
-    // tempfile, err := CopyFile("base_teste_sem_header.csv", "./assets")
-    // if err != nil  {
-    //     fmt.Errorf("cannot make temporary copy of CSV file: %v", err)
-    // }
-
-    // // Load the CSV file directly into PostgreSQL, into factual.places
-    // _, err = db.Exec("copy banco_tutorial2 " +
-    //                     "( cpf, private, incompleto, data_da_ultima_compra, ticket_medio,"+ 
-    //                     "ticket_da_ultima_compra, loja_mais_frequente, loja_da_ultima_compra) " +
-    //                     "from " + tempfile + " with csv;")
-    // if err != nil {
-    //     fmt.Errorf("cannot copy CSV file into database: %v")
-    // }
-
-    // fmt.Println("Copia feita com sucesso!")
-}
-
-func (c *Connect) dbConnect() {
-
-    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
-      "password=%s dbname=%s sslmode=disable",
-      c.HOST, c.PORT, c.USER, c.PASSWORD, c.DBNAME)
-
-    db, err := sql.Open("postgres", psqlInfo)
-
-    if err != nil {
-      panic(err)
-    }
-    defer db.Close()
-    
-    err = db.Ping()
-    if err != nil {
-        panic(err)
-    }
-
-    fmt.Println("Successfully connected inside method!")
-}
-
-func cpfIsValid(){
-    // Get env variables
-    host     := os.Getenv("HOST")
-    port     := os.Getenv("PORT")
-    user     := os.Getenv("USER")
-    password := os.Getenv("PASSWORD")
-    dbname   := os.Getenv("DBNAME")
+    csv_path = "/home/base_teste_min_sem_header.csv"
+    table_name = "banco_tutorial_min"
 
     psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
       "password=%s dbname=%s sslmode=disable",
@@ -232,17 +192,64 @@ func cpfIsValid(){
 
     db, err := sql.Open("postgres", psqlInfo)
 
-    if err != nil {
-      panic(err)
-    }
+    check(err)
     defer db.Close()
     
     err = db.Ping()
+    check(err)
+    
+    fmt.Println()
+    fmt.Println("Successfully connected for import CSV!")
+    fmt.Println()
+
+    dat, err := ioutil.ReadFile("/go/src/app/assets/base_teste_min_sem_header.csv") // CSV_PATH=/go/src/app/assets/base_teste_min_sem_header.csv
+    check(err)
+
+    f, err := os.Open("/go/src/app/assets/base_teste_min_sem_header.csv")
+    check(err)
+
+    fmt.Printf("File dat value: %v \n", string(dat))
+    fmt.Printf("File dat type: %T\n", dat)
+    fmt.Printf("File f value: %v \n File f type: %T\n", *f, *f)
+    fmt.Printf("File f value: %v \n File f type: %T\n", f, f)
+
+    // Load the CSV file directly into PostgreSQL, into factual.places
+    sqlStatement := fmt.Sprintf(`
+        COPY %s (
+            cpf, 
+            private, 
+            incompleto, 
+            data_da_ultima_compra, 
+            ticket_medio, 
+            ticket_da_ultima_compra, 
+            loja_mais_frequente, 
+            loja_da_ultima_compra
+        ) FROM '%s' DELIMITERS ',' CSV;`, 
+    table_name, csv_path)
+
+    _,err = db.Exec(sqlStatement)
+
     if err != nil {
         panic(err)
     }
+    fmt.Println("Import CSV with success!")
+}
+
+func cpfIsValid(host, port, user, password, dbname, table_name, csv_path string){
+    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
+      "password=%s dbname=%s sslmode=disable",
+      host, port, user, password, dbname)
+
+    db, err := sql.Open("postgres", psqlInfo)
+
+    check(err)
+    defer db.Close()
     
-    fmt.Println("Successfully connected!")
+    err = db.Ping()
+    check(err)
+    
+    fmt.Println()
+    fmt.Println("Successfully connected for CPF validation!")
 
     sqlStatement := `SELECT cpf, id FROM banco_tutorial;`
 
@@ -268,11 +275,13 @@ func cpfIsValid(){
         // fmt.Printf("CPF: %v - ID: %v - É valido? %v\n", returnedCpf, returnedID, brdoc.IsCPF(returnedCpf))
 
         if !(brdoc.IsCPF(returnedCpf)){
-            sqlStatement := `
-                DELETE FROM banco_tutorial
-                WHERE id=$1
-            `
-            _,err = db.Exec(sqlStatement, returnedID)
+            sqlStatement := fmt.Sprintf(`
+                DELETE FROM %s
+                WHERE id=%s
+            `, 
+            table_name, returnedID)
+
+            _,err = db.Exec(sqlStatement)
 
             if err != nil {
                 panic(err)
@@ -294,31 +303,21 @@ func cpfIsValid(){
     }
 }
 
-func cnpjIsValid(){
-    // Get env variables
-    host     := os.Getenv("HOST")
-    port     := os.Getenv("PORT")
-    user     := os.Getenv("USER")
-    password := os.Getenv("PASSWORD")
-    dbname   := os.Getenv("DBNAME")
-
+func cnpjIsValid(host, port, user, password, dbname, table_name, csv_path string){
     psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
-                            "password=%s dbname=%s sslmode=disable",
-                            host, port, user, password, dbname)
+        "password=%s dbname=%s sslmode=disable",
+        host, port, user, password, dbname)
 
     db, err := sql.Open("postgres", psqlInfo)
 
-    if err != nil {
-      panic(err)
-    }
+    check(err)
     defer db.Close()
     
     err = db.Ping()
-    if err != nil {
-        panic(err)
-    }
+    check(err)
     
-    fmt.Println("Successfully connected!")
+    fmt.Println()
+    fmt.Println("Successfully connected for CNPJ validation!")
 
     sqlStatement := `SELECT loja_mais_frequente, loja_da_ultima_compra, id FROM banco_tutorial;`
 
@@ -345,11 +344,13 @@ func cnpjIsValid(){
         // fmt.Printf("CNPJ mais frequente: %v - É valido? %v / CNPJ ultima compra: %v - É valido? %v- ID: %v\n", moreFrequentCNPJ, brdoc.IsCNPJ(moreFrequentCNPJ), lastBuyCNPJ, brdoc.IsCNPJ(lastBuyCNPJ), returnedID)
         
         if !(brdoc.IsCNPJ(moreFrequentCNPJ) || brdoc.IsCNPJ(lastBuyCNPJ)){
-            sqlStatement := `
-                DELETE FROM banco_tutorial
-                WHERE id=$1
-            `
-            _,err = db.Exec(sqlStatement, returnedID)
+            sqlStatement := fmt.Sprintf(`
+                DELETE FROM %s
+                WHERE id=%s
+            `, 
+            table_name, returnedID)
+
+            _,err = db.Exec(sqlStatement)
 
             if err != nil {
                 panic(err)
