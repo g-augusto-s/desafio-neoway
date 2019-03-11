@@ -1,6 +1,6 @@
 # Desafio Técnico - Processo Seletivo Neoway - Analista de Sistemas
 
-Requisitos:
+###Requisitos:
 - Criar um serviço em GO que receba um arquivo csv/txt de entrada (Arquivo Anexo)
 - Este serviço deve persistir no banco de dados relacional (postgres) todos os dados contidos no arquivo
   Obs: O arquivo não possui um separador muito convencional
@@ -12,12 +12,12 @@ Requisitos:
 - Validar os CPFs/CNPJs contidos (validos e não validos numericamente)
 - Todo o código deve estar disponível em repositório publico do GIT
  
-Desejável:
+**Desejável:**
 - Utilização das linguagen GOLANG para o desenvolvimento do serviço
 - Utilização do DB Postgres
 - Docker Conpose , com orientações para executar (arquivo readme) 
 
-Você será avaliado por:
+**Você será avaliado por:**
 - Utilização de melhores práticas de desenvolvimento (nomenclatura, funções, classes, etc);
 - Utilização dos recursos mais recentes das linguagens;
 - Boa organização lógica e documental (readme, comentários, etc);
@@ -33,7 +33,7 @@ Apresentar-nos apenas o link do Github com o projeto.
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-### Abordagem
+## Abordagem
 
 A step by step series of examples that tell you how to get a development env running
 
@@ -49,7 +49,7 @@ And repeat
 until finished
 ```
 
-### Instalando
+## Instalando
 
 Explain what these tests test and why
 
