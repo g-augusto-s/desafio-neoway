@@ -96,8 +96,6 @@ O repositorio já está com o arquivo **base_teste.csv** na pasta "app/assets/".
 ``` bash
 $ cp "caminho_do_arquivo"/base_teste.csv "pasta_local_onde_foi_baixado_o_repositorio"/desafio-neoway/app/assets/
 ```
-**Trocar HOST no arquivo docker-compose.yml para seu ip local conforme:** [Docker Compose](#docker-compose)
-
 Executar o comando Docker Compose:
 ``` bash
 $ docker-compose up
@@ -124,11 +122,8 @@ CREATE TABLE IF NOT EXISTS base_teste (
 
 O arquivo docker-compose.yml baixa as imagens e cria os containers para o banco de dados com Postgres e para o serviço em GO.
 
-### Atenção com as variáveis de ambiente HOST e PORT
 
-TROCAR AS VARIAVEIS **HOST** E **PORT** para seu **IP Local** e porta conveniente no arquivo "./docker-compose.yml" linhas 31 e 32.
-
-OBS: tentei substituir o HOST por localhost porém o docker não reconhecia
+TROCAR A VARIAVEl **PORT** se precisar usar outra porta mais conveniente no arquivo "./docker-compose.yml" linha 32.
 
 ``` yml
 version: '3'
